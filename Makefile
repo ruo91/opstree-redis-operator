@@ -15,7 +15,7 @@ ENVTEST_K8S_VERSION = 1.31.0
 IMG ?= quay.io/opstree/redis-operator:v$(VERSION)
 
 # Container engine to use (docker or podman)
-CONTAINER_ENGINE ?= docker
+CONTAINER_ENGINE ?= podman
 
 # Platforms for multi-arch builds
 PLATFORMS = "linux/arm64,linux/amd64"
