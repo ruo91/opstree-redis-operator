@@ -17,37 +17,44 @@ limitations under the License.
 package v1beta2
 
 import (
-	common "github.com/OT-CONTAINER-KIT/redis-operator/api"
-	status "github.com/OT-CONTAINER-KIT/redis-operator/api/status"
+	common "github.com/OT-CONTAINER-KIT/redis-operator/api/common/v1beta2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // RedisClusterSpec defines the desired state of RedisCluster
 type RedisClusterSpec struct {
-	Size             *int32           `json:"clusterSize"`
-	KubernetesConfig KubernetesConfig `json:"kubernetesConfig"`
-	HostNetwork      bool             `json:"hostNetwork,omitempty"`
+	Size             *int32                  `json:"clusterSize"`
+	KubernetesConfig common.KubernetesConfig `json:"kubernetesConfig"`
+	HostNetwork      bool                    `json:"hostNetwork,omitempty"`
 	// +kubebuilder:default:=6379
 	Port *int `json:"port,omitempty"`
 	// +kubebuilder:default:=v7
 	ClusterVersion     *string                      `json:"clusterVersion,omitempty"`
-	RedisConfig        *RedisConfig                 `json:"redisConfig,omitempty"`
+	RedisConfig        *common.RedisConfig          `json:"redisConfig,omitempty"`
 	RedisLeader        RedisLeader                  `json:"redisLeader,omitempty"`
 	RedisFollower      RedisFollower                `json:"redisFollower,omitempty"`
-	RedisExporter      *RedisExporter               `json:"redisExporter,omitempty"`
+	RedisExporter      *common.RedisExporter        `json:"redisExporter,omitempty"`
 	Storage            *ClusterStorage              `json:"storage,omitempty"`
 	PodSecurityContext *corev1.PodSecurityContext   `json:"podSecurityContext,omitempty"`
 	PriorityClassName  string                       `json:"priorityClassName,omitempty"`
 	Resources          *corev1.ResourceRequirements `json:"resources,omitempty"`
-	TLS                *TLSConfig                   `json:"TLS,omitempty"`
-	ACL                *ACLConfig                   `json:"acl,omitempty"`
-	InitContainer      *InitContainer               `json:"initContainer,omitempty"`
-	Sidecars           *[]Sidecar                   `json:"sidecars,omitempty"`
+	TLS                *common.TLSConfig            `json:"TLS,omitempty"`
+	ACL                *common.ACLConfig            `json:"acl,omitempty"`
+	InitContainer      *common.InitContainer        `json:"initContainer,omitempty"`
+	Sidecars           *[]common.Sidecar            `json:"sidecars,omitempty"`
 	ServiceAccountName *string                      `json:"serviceAccountName,omitempty"`
 	PersistenceEnabled *bool                        `json:"persistenceEnabled,omitempty"`
 	EnvVars            *[]corev1.EnvVar             `json:"env,omitempty"`
 	HostPort           *int                         `json:"hostPort,omitempty"`
+}
+
+// Node-conf needs to be added only in redis cluster
+type ClusterStorage struct {
+	// +kubebuilder:default=false
+	NodeConfVolume              bool                         `json:"nodeConfVolume,omitempty"`
+	NodeConfVolumeClaimTemplate corev1.PersistentVolumeClaim `json:"nodeConfVolumeClaimTemplate,omitempty"`
+	common.Storage              `json:",inline"`
 }
 
 func (cr *RedisClusterSpec) GetReplicaCounts(t string) int32 {
@@ -108,13 +115,31 @@ type RedisFollower struct {
 // RedisClusterStatus defines the observed state of RedisCluster
 // +kubebuilder:subresource:status
 type RedisClusterStatus struct {
-	State  status.RedisClusterState `json:"state,omitempty"`
-	Reason string                   `json:"reason,omitempty"`
+	State  RedisClusterState `json:"state,omitempty"`
+	Reason string            `json:"reason,omitempty"`
 	// +kubebuilder:default=0
 	ReadyLeaderReplicas int32 `json:"readyLeaderReplicas,omitempty"`
 	// +kubebuilder:default=0
 	ReadyFollowerReplicas int32 `json:"readyFollowerReplicas,omitempty"`
 }
+
+type RedisClusterState string
+
+const (
+	InitializingClusterLeaderReason   string = "RedisCluster is initializing leaders"
+	InitializingClusterFollowerReason string = "RedisCluster is initializing followers"
+	BootstrapClusterReason            string = "RedisCluster is bootstrapping"
+	ReadyClusterReason                string = "RedisCluster is ready"
+)
+
+// Status Field of the Redis Cluster
+const (
+	RedisClusterInitializing RedisClusterState = "Initializing"
+	RedisClusterBootstrap    RedisClusterState = "Bootstrap"
+	// RedisClusterReady means the RedisCluster is ready for use, we use redis-cli --cluster check 127.0.0.1:6379 to check the cluster status
+	RedisClusterReady  RedisClusterState = "Ready"
+	RedisClusterFailed RedisClusterState = "Failed"
+)
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status

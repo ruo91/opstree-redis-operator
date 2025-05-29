@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	common "github.com/OT-CONTAINER-KIT/redis-operator/api"
-	redisv1beta2 "github.com/OT-CONTAINER-KIT/redis-operator/api/v1beta2"
+	common "github.com/OT-CONTAINER-KIT/redis-operator/api/common/v1beta2"
+	rsvb2 "github.com/OT-CONTAINER-KIT/redis-operator/api/redissentinel/v1beta2"
 	"github.com/agiledragon/gomonkey/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -96,7 +96,7 @@ func Test_generateRedisSentinelParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.RedisSentinel{}
+	input := &rsvb2.RedisSentinel{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
@@ -175,14 +175,12 @@ func Test_generateRedisSentinelContainerParams(t *testing.T) {
 		EnabledPassword: ptr.To(true),
 		SecretName:      ptr.To("redis-secret"),
 		SecretKey:       ptr.To("password"),
-		TLSConfig: &redisv1beta2.TLSConfig{
-			TLSConfig: common.TLSConfig{
-				CaKeyFile:   "ca.key",
-				CertKeyFile: "tls.crt",
-				KeyFile:     "tls.key",
-				Secret: corev1.SecretVolumeSource{
-					SecretName: "redis-tls-cert",
-				},
+		TLSConfig: &common.TLSConfig{
+			CaKeyFile:   "ca.key",
+			CertKeyFile: "tls.crt",
+			KeyFile:     "tls.key",
+			Secret: corev1.SecretVolumeSource{
+				SecretName: "redis-tls-cert",
 			},
 		},
 		AdditionalEnvVariable: &[]corev1.EnvVar{},
@@ -221,7 +219,7 @@ func Test_generateRedisSentinelContainerParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.RedisSentinel{}
+	input := &rsvb2.RedisSentinel{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
@@ -299,7 +297,7 @@ func Test_generateRedisSentinelInitContainerParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.RedisSentinel{}
+	input := &rsvb2.RedisSentinel{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
@@ -312,7 +310,7 @@ func Test_generateRedisSentinelInitContainerParams(t *testing.T) {
 func Test_getSentinelEnvVariable(t *testing.T) {
 	type args struct {
 		client kubernetes.Interface
-		cr     *redisv1beta2.RedisSentinel
+		cr     *rsvb2.RedisSentinel
 	}
 	tests := []struct {
 		name string
@@ -323,7 +321,7 @@ func Test_getSentinelEnvVariable(t *testing.T) {
 			name: "When RedisSentinelConfig is nil",
 			args: args{
 				client: nil,
-				cr:     &redisv1beta2.RedisSentinel{},
+				cr:     &rsvb2.RedisSentinel{},
 			},
 			want: &[]corev1.EnvVar{},
 		},
@@ -360,13 +358,13 @@ func Test_getSentinelEnvVariable(t *testing.T) {
 							},
 						},
 					}),
-				cr: &redisv1beta2.RedisSentinel{
+				cr: &rsvb2.RedisSentinel{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "redis-sentinel",
 						Namespace: "redis",
 					},
-					Spec: redisv1beta2.RedisSentinelSpec{
-						RedisSentinelConfig: &redisv1beta2.RedisSentinelConfig{
+					Spec: rsvb2.RedisSentinelSpec{
+						RedisSentinelConfig: &rsvb2.RedisSentinelConfig{
 							RedisSentinelConfig: common.RedisSentinelConfig{
 								RedisReplicationName:  "redis-replication",
 								MasterGroupName:       "master",
@@ -442,7 +440,7 @@ func Test_getSentinelEnvVariable(t *testing.T) {
 				},
 			)
 			patches := gomonkey.ApplyFunc(getRedisReplicationMasterIP,
-				func(_ context.Context, _ kubernetes.Interface, _ *redisv1beta2.RedisSentinel, _ dynamic.Interface) string {
+				func(_ context.Context, _ kubernetes.Interface, _ *rsvb2.RedisSentinel, _ dynamic.Interface) string {
 					return "10.0.0.1"
 				})
 			defer patches.Reset()

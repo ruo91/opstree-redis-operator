@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	common "github.com/OT-CONTAINER-KIT/redis-operator/api"
-	redisv1beta2 "github.com/OT-CONTAINER-KIT/redis-operator/api/v1beta2"
+	common "github.com/OT-CONTAINER-KIT/redis-operator/api/common/v1beta2"
+	rvb2 "github.com/OT-CONTAINER-KIT/redis-operator/api/redis/v1beta2"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -90,7 +90,7 @@ func Test_generateRedisStandaloneParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.Redis{}
+	input := &rvb2.Redis{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
@@ -171,17 +171,15 @@ func Test_generateRedisStandaloneContainerParams(t *testing.T) {
 		SecretName:         ptr.To("redis-secret"),
 		SecretKey:          ptr.To("password"),
 		PersistenceEnabled: ptr.To(true),
-		TLSConfig: &redisv1beta2.TLSConfig{
-			TLSConfig: common.TLSConfig{
-				CaKeyFile:   "ca.key",
-				CertKeyFile: "tls.crt",
-				KeyFile:     "tls.key",
-				Secret: corev1.SecretVolumeSource{
-					SecretName: "redis-tls-cert",
-				},
+		TLSConfig: &common.TLSConfig{
+			CaKeyFile:   "ca.key",
+			CertKeyFile: "tls.crt",
+			KeyFile:     "tls.key",
+			Secret: corev1.SecretVolumeSource{
+				SecretName: "redis-tls-cert",
 			},
 		},
-		ACLConfig: &redisv1beta2.ACLConfig{
+		ACLConfig: &common.ACLConfig{
 			Secret: &corev1.SecretVolumeSource{
 				SecretName: "acl-secret",
 			},
@@ -221,7 +219,7 @@ func Test_generateRedisStandaloneContainerParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.Redis{}
+	input := &rvb2.Redis{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
@@ -300,7 +298,7 @@ func Test_generateRedisStandaloneInitContainerParams(t *testing.T) {
 		t.Fatalf("Failed to read file %s: %v", path, err)
 	}
 
-	input := &redisv1beta2.Redis{}
+	input := &rvb2.Redis{}
 	err = yaml.UnmarshalStrict(data, input)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal file %s: %v", path, err)
