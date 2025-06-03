@@ -3,16 +3,15 @@ module github.com/OT-CONTAINER-KIT/redis-operator
 go 1.23.4
 
 require (
-	github.com/agiledragon/gomonkey/v2 v2.13.0
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/banzaicloud/k8s-objectmatcher v1.8.0
-	github.com/go-logr/logr v1.4.2
+	github.com/go-logr/logr v1.4.3
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.22.0
-	github.com/redis/go-redis/v9 v9.7.3
+	github.com/redis/go-redis/v9 v9.9.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.10.0
 	gomodules.xyz/jsonpatch/v2 v2.4.0
