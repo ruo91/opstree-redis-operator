@@ -1,9 +1,10 @@
 ---
 redisOperator:
   name: redis-operator
-  imageName: ghcr.io/ot-container-kit/redis-operator/redis-operator
+  #imageName: ghcr.io/ot-container-kit/redis-operator/redis-operator
+  imageName: docker.io/ruo91/opstree-redis-operator
   # Overrides the image tag whose default is the chart appVersion.
-  imageTag: ""
+  imageTag: "v0.21.0"
   imagePullPolicy: Always
   imagePullSecrets: []
 
@@ -33,7 +34,7 @@ resources:
     cpu: 500m
     memory: 500Mi
 
-replicas: 1
+replicas: 3
 
 rbac:
   enabled: true
@@ -53,7 +54,7 @@ certificate:
 issuer:
   # Whether to create the issuer or not. You might want to disable this if instead you
   # want to use a ClusterIssuer that you simply want to provide.
-  create: true
+  create: false
   # You can choose Issuer or ClusterIssuer here. The first one is namespaced, the second one
   # is available for global usage.
   kind: Issuer
@@ -75,11 +76,22 @@ certmanager:
   apiVersion: "cert-manager.io/v1"
 
 priorityClassName: ""
-nodeSelector: {}
+nodeSelector:
+  node-role.kubernetes.io/master: ""
 tolerateAllTaints: false
-tolerations: []
-affinity: {}
-
+#tolerations: []
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+#affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: Exists
 podSecurityContext: {}
 #  fsGroup: 2000
 

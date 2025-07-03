@@ -1,8 +1,8 @@
 ---
 redisStandalone:
   name: ""
-  image: quay.io/opstree/redis
-  tag: v7.0.15
+  image: docker.io/ruo91/redis-fedora
+  tag: v8.0.2
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
     # - name:  Secret with Registry credentials
@@ -10,13 +10,13 @@ redisStandalone:
     secretName: ""
     secretKey: ""
   serviceType: ClusterIP
-  resources: {}
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources:
+    requests:
+      #cpu: 8
+      memory: 32Gi
+    limits:
+      #cpu: 8
+      memory: 32Gi
   ignoreAnnotations: []
     # - "redis.opstreelabs.in/ignore"
   minReadySeconds: 0
@@ -29,18 +29,69 @@ labels: {}
 #   test: echo
 
 externalConfig:
-  enabled: false
+  enabled: true
   data: |
-    tcp-keepalive 400
-    slowlog-max-len 158
-    stream-node-max-bytes 2048
+    # Connection Management
+    #protected-mode no
+    maxclients 500000
+    tcp-backlog 65535
+    timeout 0
+    tcp-keepalive 300
+    
+    # Memory Usage
+    maxmemory 32gb
+    maxmemory-policy allkeys-lru
+    maxmemory-samples 10
+    
+    # Performance / Timing
+    hz 500
+    #dynamic-hz yes
+    
+    # Latency tuning
+    latency-monitor-threshold 5
+    slowlog-log-slower-than 15000
+    slowlog-max-len 1024
+    
+    # Append only file rewrite settings
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 128mb
+    
+    # Advanced fd tuning
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit slave 128mb 64mb 60
+    client-output-buffer-limit pubsub 256mb 64mb 60
+    
+    # Optimizing memory
+    hash-max-ziplist-entries 1024
+    hash-max-ziplist-value 256
+    
+    # When enabled, Redis evicts keys in a lazy (asynchronous) manner using background threads.
+    # This reduces latency spikes during eviction by avoiding time-consuming deletions on the main thread.
+    lazyfree-lazy-eviction yes
+    
+    # Enables lazy (asynchronous) deletion of expired keys.
+    # Instead of removing keys synchronously when they expire, Redis defers the actual memory release to background threads.
+    lazyfree-lazy-expire yes
+    
+    # When enabled, Redis performs DEL operations in a non-blocking way using background threads,
+    # particularly for complex data types like lists, hashes, or sorted sets with many elements.
+    lazyfree-lazy-server-del yes
+    
+    # Implementing Memory Defragmentation
+    # Enables active memory defragmentation to reduce fragmentation in long-running Redis instances.
+    # Helps reclaim fragmented memory and maintain performance stability over time.
+    activedefrag yes
+    
+    # Multi-Threads
+    io-threads-do-reads yes
+    io-threads 4
 
 externalService:
-  enabled: false
+  enabled: true
   # annotations:
   #   foo: bar
   serviceType: NodePort
-  port: 6379
+  port: 30011
 
 serviceMonitor:
   enabled: false
@@ -53,9 +104,9 @@ serviceMonitor:
     # team: devops
 
 redisExporter:
-  enabled: false
-  image: quay.io/opstree/redis-exporter
-  tag: "v1.44.0"
+  enabled: true
+  image: docker.io/ruo91/redis-exporter-fedora
+  tag: "v1.74.0"
   imagePullPolicy: IfNotPresent
   resources: {}
     # requests:
@@ -85,33 +136,33 @@ initContainer:
   args: []
 
 sidecars:
-  name: ""
-  image: ""
+  name: "redis-tools"
+  image: "docker.io/ruo91/redis-tools-fedora:v8.0.2"
   imagePullPolicy: "IfNotPresent"
-  resources:
-    limits:
-      cpu: "100m"
-      memory: "128Mi"
-    requests:
-      cpu: "50m"
-      memory: "64Mi"
+  #resources:
+  #  limits:
+  #    cpu: "100m"
+  #    memory: "128Mi"
+  #  requests:
+  #    cpu: "50m"
+  #    memory: "64Mi"
   env: []
     # - name: MY_ENV_VAR
     #   value: "my-env-var-value"
 
 priorityClassName: ""
 
-nodeSelector: {}
-  # memory: medium
+nodeSelector:
+  node-role.kubernetes.io/worker: ""
 
 storageSpec:
   volumeClaimTemplate:
     spec:
-      # storageClassName: standard
+      storageClassName: t1-redis-sc
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 1Gi
+          storage: 50Gi
   #   selector: {}
 
 podSecurityContext:
@@ -120,23 +171,25 @@ podSecurityContext:
 
 securityContext: {}
 
-affinity: {}
-  # nodeAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: disktype
-  #         operator: In
-  #         values:
-  #         - ssd
+#affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: node-role.kubernetes.io/worker
+          operator: Exists
+          #values:
+          #- ssd
 
 tolerations: []
-  # - key: "key"
-  #   operator: "Equal"
-  #   value: "value"
-  #   effect: "NoSchedule"
+#tolerations:
+#  - key: "node-role.kubernetes.io/worker"
+#    operator: "Exists"
+#    #value: "value"
+#    effect: "NoSchedule"
 
-serviceAccountName: ""
+serviceAccountName: "default"
 
 TLS:
   ca: ca.key
