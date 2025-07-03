@@ -1,6 +1,6 @@
 ---
 redisSentinel:
-  name: "t1-redis"
+  name: "redis"
   clusterSize: 3
   image: docker.io/ruo91/opstree-redis-sentinel-fedora
   tag: v8.0.2
@@ -33,11 +33,11 @@ labels: {}
 #   test: echo
 
 redisSentinelConfig:
-  redisReplicationName: "t1-redis-replication"
+  redisReplicationName: "redis-replication"
   redisReplicationPassword:
     secretName: "redis-secret"
     secretKey: "password"
-  masterGroupName: "t1-redis"
+  masterGroupName: "redis"
   resolveHostnames: "redis.yongbok.net"
   announceHostnames: "reids.yongbok.net"
   redisPort: "6379"

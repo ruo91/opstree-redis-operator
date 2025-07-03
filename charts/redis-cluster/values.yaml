@@ -1,6 +1,6 @@
 ---
 redisCluster:
-  name: "t1-redis"
+  name: "redis"
   clusterSize: 3
   clusterVersion: v8
   persistenceEnabled: true
