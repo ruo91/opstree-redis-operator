@@ -2,7 +2,7 @@
 redisReplication:
   name: "t1-redis"
   clusterSize: 3
-  image: docker.io/ruo91/redis-fedora
+  image: docker.io/ruo91/opstree-redis-fedora
   tag: v8.0.2
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
@@ -109,7 +109,7 @@ serviceMonitor:
 
 redisExporter:
   enabled: true
-  image: docker.io/ruo91/redis-exporter-fedora
+  image: docker.io/ruo91/opstree-redis-exporter-fedora
   tag: "v1.74.0"
   imagePullPolicy: IfNotPresent
   resources: {}
@@ -141,7 +141,7 @@ initContainer:
 
 sidecars:
   name: "redis-tools"
-  image: "docker.io/ruo91/redis-tools-fedora:v8.0.2"
+  image: "docker.io/ruo91/opstree-redis-tools-fedora:v8.0.2"
   imagePullPolicy: "IfNotPresent"
   #resources:
   #  limits:
