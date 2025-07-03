@@ -12,13 +12,14 @@ BUNDLE_IMG ?= controller-bundle:$(VERSION)
 ENVTEST_K8S_VERSION = 1.31.0
 
 # Image URL to use for all building/pushing image targets
-IMG ?= quay.io/opstree/redis-operator:v$(VERSION)
+IMG ?= docker.io/ruo91/opstree-redis-operator:v$(VERSION)
 
 # Container engine to use (docker or podman)
 CONTAINER_ENGINE ?= podman
 
 # Platforms for multi-arch builds
-PLATFORMS = "linux/arm64,linux/amd64"
+#PLATFORMS = "linux/arm64,linux/amd64"
+PLATFORMS = "linux/amd64"
 
 # LDFLAGS for setting the operator image during build
 LDFLAGS ?= "-s -w -X github.com/OT-CONTAINER-KIT/redis-operator/internal/image.operatorImage=$(IMG)"
