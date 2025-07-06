@@ -2,7 +2,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.2
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: redis.redis.redis.opstreelabs.in
 spec:
   group: redis.redis.opstreelabs.in
@@ -5373,7 +5373,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.2
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: redisclusters.redis.redis.opstreelabs.in
 spec:
   group: redis.redis.opstreelabs.in
@@ -13208,7 +13208,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.2
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: redisreplications.redis.redis.opstreelabs.in
 spec:
   group: redis.redis.opstreelabs.in
@@ -18780,7 +18780,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.2
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: redissentinels.redis.redis.opstreelabs.in
 spec:
   group: redis.redis.opstreelabs.in
