@@ -4,15 +4,16 @@
 
 # Current Operator version
 VERSION ?= 0.21.0
+NOW_DATE := $(shell date '+%Y%m%d')
 
 # Default bundle image tag
-BUNDLE_IMG ?= controller-bundle:$(VERSION)
+BUNDLE_IMG ?= controller-bundle:$(VERSION)-$(NOW_DATE}
 
 # Kubernetes version to use for envtest
 ENVTEST_K8S_VERSION = 1.31.0
 
 # Image URL to use for all building/pushing image targets
-IMG ?= docker.io/ruo91/opstree-redis-operator:v$(VERSION)
+IMG ?= docker.io/ruo91/opstree-redis-operator:v$(VERSION)-$(NOW_DATE)
 
 # Container engine to use (docker or podman)
 CONTAINER_ENGINE ?= podman
