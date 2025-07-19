@@ -35,7 +35,7 @@ type RedisSentinelReconciler struct {
 func (r *RedisSentinelReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	instance := &rsvb2.RedisSentinel{}
 
-	err := r.Client.Get(ctx, req.NamespacedName, instance)
+	err := r.Get(ctx, req.NamespacedName, instance)
 	if err != nil {
 		return intctrlutil.RequeueECheck(ctx, err, "failed to get RedisSentinel instance")
 	}
@@ -69,8 +69,6 @@ func (r *RedisSentinelReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		}
 	}
 
-	// DO NOT REQUEUE.
-	// only reconcile on resource(sentinel && watched redis replication) changes
 	return intctrlutil.Reconciled()
 }
 
