@@ -16,9 +16,13 @@ redisCluster:
     requests:
       #cpu: 8
       memory: 32Gi
+      #hugepages-2Mi: "32Gi"
+      #hugepages-1Gi: "32Gi"
     limits:
       #cpu: 8
       memory: 32Gi
+      #hugepages-2Mi: "32Gi"
+      #hugepages-1Gi: "32Gi"
   minReadySeconds: 0
   # -- Some fields of statefulset are immutable, such as volumeClaimTemplates.
   # When set to true, the operator will delete the statefulset and recreate it. Default is false.
