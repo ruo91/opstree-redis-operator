@@ -43,6 +43,7 @@ ENVTEST ?= $(LOCALBIN)/setup-envtest-$(ENVTEST_VERSION)
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint-$(GOLANGCI_LINT_VERSION)
 KUTTL = $(LOCALBIN)/kuttl-$(KUTTL_VERSION)
 KIND = $(LOCALBIN)/kind-$(KIND_VERSION)
+CRD_REF_DOCS = $(LOCALBIN)/crd-ref-docs-$(CRD_REF_DOCS_VERSION)
 
 # Tool Versions
 KUSTOMIZE_VERSION ?= v5.6.0
@@ -51,6 +52,7 @@ ENVTEST_VERSION ?= latest
 GOLANGCI_LINT_VERSION ?= latest
 KUTTL_VERSION ?= 0.22.0
 KIND_VERSION ?= v0.27.0
+CRD_REF_DOCS_VERSION ?= v0.0.12
 
 # Options for 'bundle-build'
 ifneq ($(origin CHANNELS), undefined)
@@ -136,6 +138,11 @@ vet:
 generate: controller-gen
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
+# Generate API documentation
+.PHONY: generate-api-docs
+generate-api-docs:
+	@hack/api-docs/build.sh
+
 # Create a new builder instance for Docker Buildx with the specified platforms and set it as the current builder
 .PHONY: docker-create
 docker-create:
@@ -171,7 +178,7 @@ bundle-build:
 
 # Rebuild all generated code
 .PHONY: codegen
-codegen: generate manifests sync-crds generate-dataAssert generate-metricsdocs
+codegen: generate manifests sync-crds generate-dataAssert generate-metricsdocs generate-api-docs
 
 # Verify that codegen is up to date.
 .PHONY: verify-codegen
