@@ -71,7 +71,7 @@ func (c *checker) GetMasterFromReplication(ctx context.Context, rr *rr.RedisRepl
 
 	var masterPods []corev1.Pod
 	for _, pod := range pods.Items {
-                connInfo := createConnectionInfo(ctx, pod, password, rr.Spec.TLS, c.k8s, rr.Namespace, "6379")
+		connInfo := createConnectionInfo(ctx, pod, password, rr.Spec.TLS, c.k8s, rr.Namespace, "6379")
 		isMaster, err := c.redis.Connect(connInfo).IsMaster(ctx)
 		if err != nil {
 			return corev1.Pod{}, err
@@ -83,7 +83,7 @@ func (c *checker) GetMasterFromReplication(ctx context.Context, rr *rr.RedisRepl
 
 	var realMasterPod corev1.Pod
 	for _, pod := range masterPods {
-                connInfo := createConnectionInfo(ctx, pod, password, rr.Spec.TLS, c.k8s, rr.Namespace, "6379")
+		connInfo := createConnectionInfo(ctx, pod, password, rr.Spec.TLS, c.k8s, rr.Namespace, "6379")
 		count, err := c.redis.Connect(connInfo).GetAttachedReplicaCount(ctx)
 		if err != nil {
 			continue
@@ -91,6 +91,12 @@ func (c *checker) GetMasterFromReplication(ctx context.Context, rr *rr.RedisRepl
 		if count != 0 {
 			realMasterPod = pod
 			break
+		} else {
+			replicaNum := *sts.Spec.Replicas
+			if replicaNum == 1 {
+				realMasterPod = pod
+				break
+			}
 		}
 	}
 	return realMasterPod, nil
