@@ -4,16 +4,33 @@ kind: RedisCluster
 metadata:
   name: redis-cluster-v1beta2
 spec:
+  TLS:
+    ca: ca.crt
+    cert: tls.crt
+    key: tls.key
+    secret:
+      secretName: redis-tls-cert
   clusterSize: 3
-  clusterVersion: v6
+  clusterVersion: v7
   persistenceEnabled: true
+  redisConfig:
+    maxMemoryPercentOfLimit: 80
+    dynamicConfig:
+      - "slowlog-log-slower-than 5000"
   podSecurityContext:
     runAsUser: 1000
     fsGroup: 1000
   kubernetesConfig:
     service:
       serviceType: NodePort
-    image: quay.io/opstree/redis:v6.2.14
+      includeBusPort: true
+      headless:
+        includeBusPort: true
+        additionalAnnotations:
+          test: test
+      additional:
+        includeBusPort: true
+    image: quay.io/opstree/redis:latest
     imagePullPolicy: Always
     resources:
       requests:
@@ -22,6 +39,9 @@ spec:
       limits:
         cpu: 101m
         memory: 128Mi
+    redisSecret:
+      name: redis-secret
+      key: password
   redisExporter:
     enabled: true
     image: quay.io/opstree/redis-exporter:v1.44.0
