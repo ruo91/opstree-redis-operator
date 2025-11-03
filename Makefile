@@ -3,7 +3,7 @@
 # ===========================
 
 # Current Operator version
-VERSION ?= 0.22.1
+VERSION ?= 0.22.2
 NOW_DATE := $(shell date '+%Y%m%d')
 
 # Default bundle image tag
