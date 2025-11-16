@@ -7,7 +7,7 @@ metadata:
 spec:
   clusterSize: 3
   kubernetesConfig:
-    image: docker.io/ruo91/opstree-redis:v8.2.3
+    image: docker.io/ruo91/opstree-redis:latest
     imagePullPolicy: IfNotPresent
   # ACL configuration from PVC
   # The operator will mount /etc/redis/user.acl from the PVC

@@ -11,7 +11,7 @@ spec:
     runAsUser: 1000
     fsGroup: 1000
   kubernetesConfig:
-    image: shubham192001/redis:2.0
+    image: shubham192001/redis:latest
     imagePullPolicy: IfNotPresent
     resources:
       requests:
@@ -30,7 +30,7 @@ spec:
       secretName: acl-secret
   redisExporter:
     enabled: true
-    image: quay.io/opstree/redis-exporter:v1.44.0
+    image: quay.io/opstree/redis-exporter:latest
     imagePullPolicy: Always
     resources:
       requests:

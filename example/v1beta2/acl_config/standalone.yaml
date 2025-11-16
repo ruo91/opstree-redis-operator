@@ -7,7 +7,7 @@ spec:
   # redisConfig:
   #   additionalRedisConfig: redis-external-config
   kubernetesConfig:
-    image: shubham192001/redis:2.0
+    image: shubham192001/redis:latest
     imagePullPolicy: IfNotPresent
     resources:
       requests:
@@ -27,7 +27,7 @@ spec:
 
   redisExporter:
     enabled: false
-    image: quay.io/opstree/redis-exporter:v1.44.0
+    image: quay.io/opstree/redis-exporter:latest
     imagePullPolicy: Always
     resources:
       requests:
